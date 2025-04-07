@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Chatbot</title>
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Icons from Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="medical-container">
+        <!-- Header with medical theme -->
+        <div class="medical-header">
+            <div class="logo-container">
+                <!-- Medical cross icon -->
+                <i class="fas fa-hospital-alt medical-logo"></i>
+                <h1>Medical AI Assistant</h1>
+            </div>
+            <p class="subtitle">Ask me anything about health</p>
+            
+            <!-- Emergency notice -->
+            <div class="emergency-banner">
+                <i class="fas fa-ambulance"></i>
+                <span>For emergencies, call 115</span>
+            </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-window" id="chatWindow">
+            <!-- Default bot introduction message -->
+            <div class="bot-message">
+                <div class="avatar">
+                    <i class="fas fa-robot"></i> <!-- Bot avatar -->
+                </div>
+                <div class="message-content">
+                    <p>Hello! I'm your medical assistant. How can I help you today?</p>
+                    
+                    <!-- Quick reply suggestions -->
+                    <div class="quick-replies">
+                        <button class="quick-reply">Find a doctor</button>
+                        <button class="quick-reply">Medicine information</button>
+                        <button class="quick-reply">Symptom checker</button>
+                    </div>
+                    
+                    <!-- Disclaimer in small text -->
+                    <div class="disclaimer">
+                        <i class="fas fa-info-circle"></i>
+                        Note: This is not a substitute for professional medical advice.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Input Area -->
+        <div class="input-area">
+            <form id="chatForm">
+                <input type="text" id="userInput" name="msg" 
+                       placeholder="Type your health question..." 
+                       autocomplete="off" required>
+                <button type="submit">
+                    <i class="fas fa-paper-plane"></i> <!-- Send icon -->
+                </button>
+            </form>
+        </div>
+
+        <!-- Loading indicator (hidden by default) -->
+        <div class="loading" id="loadingIndicator" style="display: none;">
+            <div class="loading-dots">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <span>AI is analyzing your question...</span>
+        </div>
+    </div>
+
+    <!-- JavaScript for chat functionality -->
+    <script>
+        // Handle form submission
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userInput = document.getElementById('userInput');
+            const message = userInput.value.trim();
+            
+            if (message) {
+                // Display user message
+                displayMessage(message, 'user');
+                userInput.value = '';
+                
+                // Show loading indicator
+                document.getElementById('loadingIndicator').style.display = 'flex';
+                
+                // Send to Flask backend
+                fetch('/get', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'msg': message
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.text();
+                })
+                .then(answer => {
+                    displayMessage(answer, 'bot');
+                })
+                .catch(error => {
+                    displayMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                });
+            }
+        });
+
+        // Display messages in chat window
+        function displayMessage(content, sender) {
+            const chatWindow = document.getElementById('chatWindow');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${sender}-message`;
+            
+            if (sender === 'bot') {
+                messageDiv.innerHTML = `
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>${content}</p>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-content user-content">
+                        <p>${content}</p>
+                    </div>
+                `;
+            }
+            
+            chatWindow.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Auto-scroll to latest message
+        function scrollToBottom() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Quick reply button handlers
+        document.querySelectorAll('.quick-reply').forEach(button => {
+            button.addEventListener('click', function() {
+                const text = this.textContent;
+                document.getElementById('userInput').value = text;
+            });
+        });
+    </script>
+</body>
+</html>
