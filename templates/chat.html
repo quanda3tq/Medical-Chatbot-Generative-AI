@@ -125,27 +125,36 @@
         // Display messages in chat window
         function displayMessage(content, sender) {
             const chatWindow = document.getElementById('chatWindow');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `${sender}-message`;
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `message-container ${sender}-container`;
             
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
             if (sender === 'bot') {
-                messageDiv.innerHTML = `
-                    <div class="avatar">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="message-content">
-                        <p>${content}</p>
+                messageContainer.innerHTML = `
+                    <div class="message-with-time bot-message">
+                        <div class="avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>${content}</p>
+                        </div>
+                        <div class="message-time">${timeString}</div>
                     </div>
                 `;
             } else {
-                messageDiv.innerHTML = `
-                    <div class="message-content user-content">
-                        <p>${content}</p>
+                messageContainer.innerHTML = `
+                    <div class="message-with-time user-message">
+                        <div class="message-content user-content">
+                            <p>${content}</p>
+                        </div>
+                        <div class="message-time user-time">${timeString}</div>
                     </div>
                 `;
             }
             
-            chatWindow.appendChild(messageDiv);
+            chatWindow.appendChild(messageContainer);
             scrollToBottom();
         }
 

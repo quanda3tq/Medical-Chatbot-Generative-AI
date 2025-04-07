@@ -27,7 +27,7 @@ body {
 /* ===== MAIN CONTAINER ===== */
 .medical-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 700px;
     height: 90vh;
     background-color: white;
     border-radius: 15px;
@@ -46,40 +46,7 @@ body {
     position: relative;
 }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 5px;
-}
-
-.medical-logo {
-    font-size: 28px;
-    color: #fff;
-}
-
-.medical-header h1 {
-    font-size: 20px;
-    font-weight: 500;
-}
-
-.subtitle {
-    font-size: 12px;
-    opacity: 0.9;
-    margin-bottom: 10px;
-}
-
-.emergency-banner {
-    background-color: var(--medical-red);
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 5px;
-}
+/* ... (giữ nguyên các phần header khác) ... */
 
 /* ===== CHAT WINDOW ===== */
 .chat-window {
@@ -89,14 +56,12 @@ body {
     background-color: #fafbfd;
     display: flex;
     flex-direction: column;
-    gap: 15px;
 }
 
-/* ===== MESSAGE STYLES ===== */
-.bot-message, .user-message {
-    display: flex;
-    gap: 10px;
+/* ===== MESSAGE CONTAINERS ===== */
+.message-with-time {
     max-width: 85%;
+    margin-bottom: 15px;
     animation: fadeIn 0.3s ease;
 }
 
@@ -105,15 +70,48 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.bot-message {
+/* Bot message container (left aligned) */
+.message-with-time:not(.user-message) {
     align-self: flex-start;
+    display: flex;
+    gap: 10px;
 }
 
+/* User message container (right aligned) */
 .user-message {
     align-self: flex-end;
-    flex-direction: row-reverse;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
+/* ===== MESSAGE CONTENT ===== */
+.message-content {
+    padding: 12px 15px;
+    border-radius: 12px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    position: relative;
+}
+
+/* Bot message content */
+.message-with-time:not(.user-message) .message-content {
+    background-color: white;
+    border-radius: 12px 12px 12px 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-left: 46px; /* Space for avatar */
+}
+
+/* User message content */
+.user-message .message-content {
+    background-color: var(--medical-blue);
+    color: white;
+    border-radius: 12px 12px 0 12px;
+    text-align: left;
+}
+
+/* ===== AVATAR ===== */
 .avatar {
     width: 36px;
     height: 36px;
@@ -124,22 +122,23 @@ body {
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
+    align-self: flex-end;
 }
 
-.message-content {
-    background-color: white;
-    padding: 12px 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    line-height: 1.4;
+/* ===== MESSAGE TIME ===== */
+.message-time {
+    font-size: 0.65rem;
+    color: #777;
+    margin-top: 4px;
+    padding: 0 5px;
 }
 
-.user-content {
-    background-color: var(--medical-blue);
-    color: white;
-    border-radius: 12px 12px 0 12px;
+.user-message .message-time {
+    text-align: right;
+    width: 100%;
 }
 
+/* ... (giữ nguyên các phần quick replies, input area, loading, disclaimer) ... */
 /* ===== QUICK REPLIES ===== */
 .quick-replies {
     display: flex;

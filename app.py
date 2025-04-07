@@ -23,6 +23,28 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 embeddings = download_hugging_face_embeddings()
 
 
+index_name = "medicalbot"
+
+# Embed each chunk and upsert the embeddings into your Pinecone index
+docsearch = PineconeVectorStore.from_existing_index(
+    index_name=index_name,
+    embedding=embeddings
+)
+
+retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":3})
+
+llm = OpenAI(temperature=0.4, max_tokens= 300)
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ]
+)
+
+question_answer_chain = create_stuff_documents_chain(llm, prompt)
+rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+
+
 @app.route("/")
 def index():
     return render_template('chat.html')
@@ -42,10 +64,4 @@ def chat():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port= 8080, debug= True)
-
-
-
-
-
-
 
